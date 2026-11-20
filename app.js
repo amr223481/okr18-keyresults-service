@@ -1,0 +1,22 @@
+// ---------------------------------------------------------------
+// The real Key Results app: the parts from src/ connected to AWS.
+// It does not start a server. Two files use it:
+//   server.js          -> runs it on a PC (npm run dev)
+//   handlers/api.js    -> runs it on Lambda behind API Gateway
+// ---------------------------------------------------------------
+require('dotenv').config({ quiet: true });
+
+const { createApp } = require('./src/createApp');
+const { createKeyResultsRepo } = require('./src/keyResultsRepo');
+const { createGoalsClient } = require('./src/goalsClient');
+const { createVerifier } = require('./src/auth');
+
+const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:8080')
+    .split(',').map((o) => o.trim()).filter(Boolean);
+
+module.exports = createApp({
+    repo: createKeyResultsRepo(),
+    goals: createGoalsClient(),
+    verify: createVerifier(),
+    allowedOrigins
+});
