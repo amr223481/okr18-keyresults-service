@@ -1,0 +1,8 @@
+{
+  "Records": [
+    {
+      "messageId": "demo-1",
+      "body": "{\"Type\":\"Notification\",\"Message\":\"{\\\"type\\\":\\\"check-in.logged\\\",\\\"userId\\\":\\\"user-demo-a\\\",\\\"at\\\":\\\"2026-06-01T12:00:00Z\\\",\\\"data\\\":{\\\"krId\\\":\\\"KR-00000000-0000-0000-0000-000000000000\\\",\\\"value\\\":5,\\\"previousValue\\\":0}}\"}"
+    }
+  ]
+}

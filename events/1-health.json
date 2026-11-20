@@ -1,0 +1,14 @@
+{
+  "version": "2.0",
+  "rawPath": "/api/key-results/health",
+  "rawQueryString": "",
+  "headers": {},
+  "requestContext": {
+    "http": {
+      "method": "GET",
+      "path": "/api/key-results/health",
+      "sourceIp": "127.0.0.1"
+    }
+  },
+  "isBase64Encoded": false
+}
