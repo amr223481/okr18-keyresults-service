@@ -155,3 +155,29 @@ test('behind API Gateway: the event is turned into an Express request (Lambda pa
     assert.equal(res.statusCode, 201);
     assert.equal(JSON.parse(res.body).title, 'Read 12 books');
 });
+
+test('security headers are on every answer, errors too', async (t) => {
+    const { server } = setup(); t.after(() => server.close());
+    const base = `http://127.0.0.1:${server.address().port}/api/key-results`;
+    for (const res of [await fetch(`${base}/health`), await fetch(`${base}/KR-x`)]) {   // 200 and 401
+        assert.equal(res.headers.get('x-content-type-options'), 'nosniff');
+        assert.equal(res.headers.get('x-frame-options'), 'DENY');
+        assert.match(res.headers.get('content-security-policy'), /default-src 'none'/);
+        assert.equal(res.headers.get('cache-control'), 'no-store');
+    }
+});
+
+test('rate limit: request 4 of 3 gets 429, and a fake X-Forwarded-For does not help', async (t) => {
+    const app = createApp({ repo: fakeRepo(), goals: fakeGoals(), verify: fakeVerify, now: () => NOW, rateLimitMax: 3 });
+    const server = app.listen(0); t.after(() => server.close());
+    const url = `http://127.0.0.1:${server.address().port}/api/key-results/health`;
+    const seen = [];
+    for (let i = 0; i < 3; i += 1) seen.push((await fetch(url)).status);
+    const fourth = await fetch(url);
+    const faked = await fetch(url, { headers: { 'x-forwarded-for': '9.9.9.9' } });
+    assert.deepEqual(seen, [200, 200, 200]);
+    assert.equal(fourth.status, 429);
+    assert.ok(Number(fourth.headers.get('retry-after')) > 0);
+    assert.equal((await fourth.json()).error.code, 'RATE_LIMITED');
+    assert.equal(faked.status, 429);
+});

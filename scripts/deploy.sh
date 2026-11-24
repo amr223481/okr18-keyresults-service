@@ -93,7 +93,8 @@ write_env() {   # KEY=VALUE ...  ->  out/env.json
 }
 write_env NODE_ENV=production "KR_TABLE=$TABLE" "GOALS_INTERNAL_FUNCTION=$GOALS_FN" "EVENTS_TOPIC_ARN=${EVENTS_TOPIC_ARN:-}" \
   "COGNITO_ISSUER=${COGNITO_ISSUER:-}" "COGNITO_JWKS_URI=${COGNITO_JWKS_URI:-}" "COGNITO_CLIENT_ID=${COGNITO_CLIENT_ID:-}" \
-  "ALLOW_HTTP_JWKS=${ALLOW_HTTP_JWKS:-true}" "CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:8080}"
+  "ALLOW_HTTP_JWKS=${ALLOW_HTTP_JWKS:-true}" "CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:8080}" \
+  "RATE_LIMIT_MAX=${RATE_LIMIT_MAX:-60}"   # requests per IP per minute; raise only for a load test
 
 deploy_fn() {   # name handler
   if aws lambda get-function --function-name "$1" > /dev/null 2>&1; then
